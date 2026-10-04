@@ -39,6 +39,7 @@ window.addEventListener("scroll", function () {
 var mobileMenuBtn = document.getElementById("mobileMenuBtn");
 var navDrawer     = document.getElementById("navDrawer");
 var drawerBackdrop = document.getElementById("drawerBackdrop");
+var legacyNavMenu = document.getElementById("navMenu");
 
 function openDrawer() {
   if (!navDrawer) return;
@@ -46,27 +47,69 @@ function openDrawer() {
   navDrawer.setAttribute("aria-hidden", "false");
   if (drawerBackdrop) drawerBackdrop.classList.add("is-open");
   if (mobileMenuBtn) mobileMenuBtn.classList.add("is-open");
+  if (mobileMenuBtn) {
+    mobileMenuBtn.setAttribute("aria-expanded", "true");
+    mobileMenuBtn.setAttribute("aria-label", "Close menu");
+  }
   document.body.style.overflow = "hidden";
+  var drawerCloseBtn = document.getElementById("drawerCloseBtn");
+  if (drawerCloseBtn) drawerCloseBtn.focus();
 }
-function closeDrawer() {
+function closeDrawer(restoreFocus) {
   if (!navDrawer) return;
+  var wasOpen = navDrawer.classList.contains("is-open");
   navDrawer.classList.remove("is-open");
   navDrawer.setAttribute("aria-hidden", "true");
   if (drawerBackdrop) drawerBackdrop.classList.remove("is-open");
   if (mobileMenuBtn) mobileMenuBtn.classList.remove("is-open");
+  if (mobileMenuBtn) {
+    mobileMenuBtn.setAttribute("aria-expanded", "false");
+    mobileMenuBtn.setAttribute("aria-label", "Open menu");
+  }
   document.body.style.overflow = "";
+  if (wasOpen && restoreFocus !== false && mobileMenuBtn) mobileMenuBtn.focus();
 }
 
-if (mobileMenuBtn) mobileMenuBtn.addEventListener("click", function (e) { e.stopPropagation(); openDrawer(); });
+if (mobileMenuBtn) mobileMenuBtn.addEventListener("click", function (e) {
+  e.stopPropagation();
+  if (navDrawer && navDrawer.classList.contains("is-open")) closeDrawer();
+  else if (navDrawer) openDrawer();
+  else if (legacyNavMenu) {
+    var isOpen = legacyNavMenu.classList.toggle("active");
+    mobileMenuBtn.setAttribute("aria-expanded", String(isOpen));
+    mobileMenuBtn.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+  }
+});
 if (drawerBackdrop) drawerBackdrop.addEventListener("click", closeDrawer);
 var drawerCloseBtn = document.getElementById("drawerCloseBtn");
 if (drawerCloseBtn) drawerCloseBtn.addEventListener("click", closeDrawer);
 if (navDrawer) {
   navDrawer.querySelectorAll(".drawer-lnk").forEach(function (l) {
-    l.addEventListener("click", closeDrawer);
+    l.addEventListener("click", function () { closeDrawer(false); });
   });
 }
-document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeDrawer(); closeMobSearch(); } });
+if (legacyNavMenu) {
+  legacyNavMenu.querySelectorAll("a").forEach(function (link) {
+    link.addEventListener("click", function () {
+      legacyNavMenu.classList.remove("active");
+      if (mobileMenuBtn) {
+        mobileMenuBtn.setAttribute("aria-expanded", "false");
+        mobileMenuBtn.setAttribute("aria-label", "Open menu");
+      }
+    });
+  });
+}
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    closeDrawer();
+    if (legacyNavMenu) legacyNavMenu.classList.remove("active");
+    if (mobileMenuBtn && legacyNavMenu) {
+      mobileMenuBtn.setAttribute("aria-expanded", "false");
+      mobileMenuBtn.setAttribute("aria-label", "Open menu");
+    }
+    closeMobSearch();
+  }
+});
 
 // ── Mobile search slide-down ──
 var mobSearchToggle = document.getElementById("mobSearchToggle");
@@ -77,11 +120,13 @@ var mobSrchClose    = document.getElementById("mobSrchClose");
 function openMobSearch() {
   if (!mobSrchBar) return;
   mobSrchBar.classList.add("is-open");
+  if (mobSearchToggle) mobSearchToggle.setAttribute("aria-expanded", "true");
   if (mobSrchInput) setTimeout(function () { mobSrchInput.focus(); }, 120);
 }
 function closeMobSearch() {
   if (!mobSrchBar) return;
   mobSrchBar.classList.remove("is-open");
+  if (mobSearchToggle) mobSearchToggle.setAttribute("aria-expanded", "false");
   if (mobSrchInput) mobSrchInput.blur();
 }
 
@@ -104,12 +149,25 @@ document.addEventListener("DOMContentLoaded", function () {
   var drawerAdminBtn = document.getElementById("drawerAdminBtn");
   if (drawerAdminBtn) {
     drawerAdminBtn.addEventListener("click", function () {
-      closeDrawer();
+      closeDrawer(false);
       if (window.carbuyOpenAuthModal) window.carbuyOpenAuthModal("admin");
     });
   }
 
-    }
+  var drawerLoginBtn = document.getElementById("drawerLoginBtn");
+  if (drawerLoginBtn) {
+    drawerLoginBtn.addEventListener("click", function () {
+      closeDrawer(false);
+      if (window.carbuyOpenAuthModal) window.carbuyOpenAuthModal("login");
+    });
+  }
+
+  var adminNavBtn = document.getElementById("adminNavBtn");
+  if (adminNavBtn) {
+    adminNavBtn.addEventListener("click", function () {
+      if (window.carbuyOpenAuthModal) window.carbuyOpenAuthModal("admin");
+    });
+  }
 });
 
 // SEARCH TOGGLE

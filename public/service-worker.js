@@ -1,4 +1,4 @@
-﻿var CACHE = "carbuy-v3";
+var CACHE = "carbuy-v15";
 var STATIC_ASSETS = [
   "/",
   "/index.html",
