@@ -250,6 +250,29 @@ body.dark-theme .site-header {
   display: flex; align-items: center; gap: 0.2rem;
   flex: 1; justify-content: center;
 }
+.product-site-header .nav-center {
+  flex: 0 1 auto;
+  justify-content: flex-end;
+}
+.product-site-header .nav-right { margin-left: auto; }
+.product-site-header #themeToggleBtn { order: 1; }
+.product-site-header #navUser,
+.product-site-header #openAuthModal { order: 2; }
+.product-site-header #wishlistNavBtn { order: 3; }
+.product-site-header .nav-srch-pill { order: 4; }
+.product-site-header #mobSearchToggle { order: 5; }
+.product-site-header #mobileMenuBtn { order: 6; }
+@media (max-width: 900px) {
+  .product-site-header .nav-center,
+  .product-site-header .nav-srch-pill {
+    display: none;
+  }
+
+  .product-site-header .mob-only,
+  .product-site-header .nav-ham {
+    display: flex;
+  }
+}
 .nav-lnk {
   display: inline-flex; align-items: center; gap: 0.35rem;
   padding: 0.42rem 0.9rem; border-radius: 999px;

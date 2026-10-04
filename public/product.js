@@ -232,14 +232,18 @@ function navigateToRecommendation(e) {
 /* ── Load product ── */
 async function loadProduct() {
   var id = getQueryParam("id");
-  if (!id) {
-    productContent.innerHTML = '<p class="empty-state">No car selected. <a href="index.html">Browse cars</a></p>';
-    return;
-  }
   try {
-    var results = await Promise.all([fetch("/api/cars"), fetch("/api/ratings")]);
+    var carsRequest = fetch("/api/cars");
+    if (!id) {
+      var allCars = await (await carsRequest).json();
+      window._allCars = allCars;
+      productContent.innerHTML = '<p class="empty-state">No car selected. <a href="index.html">Browse cars</a></p>';
+      return;
+    }
+    var results = await Promise.all([carsRequest, fetch("/api/ratings")]);
     var cars    = await results[0].json();
     var ratings = await results[1].json();
+    window._allCars = cars;
     var car     = cars.find(function (c) { return String(c.id) === id; });
     if (!car) {
       productContent.innerHTML = '<p class="empty-state">Car not found. <a href="index.html">Browse all cars</a></p>';

@@ -173,6 +173,8 @@ document.addEventListener("DOMContentLoaded", function () {
 // SEARCH TOGGLE
 var searchToggleBtn = document.getElementById("searchToggleBtn");
 var searchInput = document.getElementById("carSearch");
+var initialSearch = new URLSearchParams(window.location.search).get("q");
+if (searchInput && initialSearch) searchInput.value = initialSearch;
 function initSearchToggle() {
   if (!searchToggleBtn || !searchInput) return;
   var sw = searchInput.closest(".nav-search");
@@ -658,6 +660,7 @@ async function loadCars() {
     initPriceSlider(cars);
     initCompareBar();
     renderCars(cars);
+    if (searchInput && searchInput.value.trim()) applyFilters();
     updateWishlistBadge();
   } catch (err) {
     carGrid.innerHTML = '<p class="empty-state">Unable to load car data. Please try again.</p>';
