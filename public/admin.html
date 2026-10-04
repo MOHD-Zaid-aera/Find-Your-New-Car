@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Add Car</title>
+  <title>Admin Dashboard - CarBuy India</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header">
+  <header class="site-header admin-site-header">
     <div class="container header-inner">
-      <div class="brand">
-        <img src="https://st2.depositphotos.com/9923666/48269/v/450/depositphotos_482692906-stock-illustration-car-garage-premium-concept-logo.jpg" alt="Indian Car Buy Logo" class="logo">
+      <a class="brand" href="index.html">
+        <img src="https://st2.depositphotos.com/9923666/48269/v/450/depositphotos_482692906-stock-illustration-car-garage-premium-concept-logo.jpg" alt="CarBuy India" class="logo">
         <div>
-          <h1>Admin Panel</h1>
-          <p>Add new car products to the website directly.</p>
+          <h1>CarBuy India</h1>
+          <p>Admin dashboard</p>
         </div>
-      </div>
+      </a>
       <button class="theme-toggle" id="themeToggleBtn" aria-label="Toggle theme" title="Switch theme">
         <span class="theme-toggle-icon">☀️</span>
       </button>
@@ -30,126 +30,104 @@
       <nav class="nav-links" id="navMenu">
         <a href="index.html">Home</a>
         <a href="index.html#cars">Cars</a>
-        <a href="index.html#features">Features</a>
         <a href="index.html#contact">Contact</a>
-        <a href="admin.html">Admin</a>
-        <a href="login.html" class="btn btn-primary">Login/Register</a>
+        <a href="admin.html" aria-current="page">Admin</a>
+        <button type="button" class="btn btn-primary admin-logout-button" id="adminLogoutBtn">Sign out</button>
       </nav>
     </div>
   </header>
 
   <main class="container admin-page">
-    <section class="section">
-      <h2>Add a New Car</h2>
-      <form id="adminCarForm" class="admin-form">
-        <label>Brand<input name="brand" required></label>
-        <label>Model<input name="model" required></label>
-        <label>Price<input name="price" required></label>
-        <label>Fuel Type<select name="fuelType" required>
-          <option value="Petrol">Petrol</option>
-          <option value="Diesel">Diesel</option>
-          <option value="CNG">CNG</option>
-          <option value="Electric">EV / Electric</option>
-        </select></label>
-        <label>Segment<input name="segment" placeholder="SUV / Hatchback / Sedan"></label>
-        <label>Mileage<input name="mileage" placeholder="23 kmpl"></label>
-        <label>Image URL<input name="imageUrl" placeholder="https://..."></label>
-        <label>Description<textarea name="description" required></textarea></label>
-        <label>Highlights<input name="highlights" placeholder="Feature 1, Feature 2"></label>
-        <button type="submit" class="btn btn-primary">Publish Car</button>
-        <p id="adminStatus" class="contact-status"></p>
-      </form>
+    <section class="admin-hero">
+      <div>
+        <p class="admin-kicker">CONTROL CENTER</p>
+        <h2>Good to see you, Admin</h2>
+        <p>Manage your car listings and keep up with customer inquiries.</p>
+      </div>
+      <a class="admin-hero-link" href="index.html#cars">View storefront <span aria-hidden="true">↗</span></a>
     </section>
 
-    <section class="section">
-      <h2>Customer Inquiries</h2>
-      <div id="inquiriesList" class="inquiry-list"></div>
+    <section class="admin-stats" aria-label="Store overview">
+      <article class="admin-stat-card">
+        <span class="admin-stat-icon" aria-hidden="true">🚘</span>
+        <div><p>Published cars</p><strong id="carCount">—</strong></div>
+      </article>
+      <article class="admin-stat-card">
+        <span class="admin-stat-icon admin-stat-icon--blue" aria-hidden="true">✉</span>
+        <div><p>Customer inquiries</p><strong id="inquiryCount">—</strong></div>
+      </article>
+      <article class="admin-stat-card">
+        <span class="admin-stat-icon admin-stat-icon--green" aria-hidden="true">⚡</span>
+        <div><p>Electric listings</p><strong id="electricCount">—</strong></div>
+      </article>
+    </section>
+
+    <div class="admin-workspace">
+      <section class="admin-panel admin-editor-panel" id="carEditor">
+        <div class="admin-panel-heading">
+          <div><p class="admin-kicker">INVENTORY</p><h2 id="editorTitle">Add a new car</h2></div>
+          <span class="admin-step">01</span>
+        </div>
+        <form id="adminCarForm" class="admin-form admin-editor-form">
+          <input type="hidden" name="id">
+          <label>Brand<input name="brand" placeholder="e.g. Tata" required></label>
+          <label>Model<input name="model" placeholder="e.g. Nexon" required></label>
+          <label>Price<input name="price" placeholder="e.g. ₹8.49 Lakh" required></label>
+          <label>Fuel type<select name="fuelType" required>
+            <option value="Petrol">Petrol</option>
+            <option value="Diesel">Diesel</option>
+            <option value="CNG">CNG</option>
+            <option value="Electric">EV / Electric</option>
+          </select></label>
+          <label>Segment<input name="segment" placeholder="SUV / Hatchback / Sedan"></label>
+          <label>Mileage<input name="mileage" placeholder="23 kmpl"></label>
+          <label class="admin-field-full">Image URL<input name="imageUrl" placeholder="https://..."></label>
+          <label class="admin-field-full">Description<textarea name="description" rows="3" placeholder="A short description of this car" required></textarea></label>
+          <label class="admin-field-full">Highlights<input name="highlights" placeholder="Feature 1, Feature 2"></label>
+          <div class="admin-form-actions admin-field-full">
+            <button type="submit" class="btn btn-primary" id="saveCarButton">Publish car</button>
+            <button type="button" class="admin-button-secondary" id="cancelEditButton" hidden>Cancel edit</button>
+          </div>
+          <p id="adminStatus" class="admin-status admin-field-full" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="admin-panel admin-inventory-panel">
+        <div class="admin-panel-heading">
+          <div><p class="admin-kicker">YOUR CATALOG</p><h2>Car inventory</h2></div>
+          <span class="admin-step">02</span>
+        </div>
+        <div class="admin-toolbar">
+          <label class="admin-search"><span class="visually-hidden">Search inventory</span><input id="inventorySearch" type="search" placeholder="Search brand or model..."></label>
+          <label class="visually-hidden" for="fuelFilter">Filter by fuel type</label>
+          <select id="fuelFilter" class="admin-filter">
+            <option value="all">All fuel types</option>
+            <option value="Petrol">Petrol</option>
+            <option value="Diesel">Diesel</option>
+            <option value="CNG">CNG</option>
+            <option value="Electric">Electric</option>
+          </select>
+        </div>
+        <div id="inventoryList" class="admin-inventory-list" aria-live="polite"><p class="admin-loading">Loading inventory...</p></div>
+      </section>
+    </div>
+
+    <section class="admin-panel admin-inquiries-panel">
+      <div class="admin-panel-heading">
+        <div><p class="admin-kicker">CUSTOMER MESSAGES</p><h2>Recent inquiries</h2></div>
+        <label class="admin-search admin-inquiry-search"><span class="visually-hidden">Search inquiries</span><input id="inquirySearch" type="search" placeholder="Search name, email or message..."></label>
+      </div>
+      <div id="inquiriesList" class="inquiry-list" aria-live="polite"><p class="admin-loading">Loading inquiries...</p></div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 FindFriendlyCar. Admin management dashboard.</p>
+      <p>© 2026 CarBuy India · Admin dashboard</p>
     </div>
   </footer>
 
   <script src="app.js"></script>
-  <script>
-    const form = document.getElementById('adminCarForm');
-    const status = document.getElementById('adminStatus');
-    const inquiriesList = document.getElementById('inquiriesList');
-
-    function escapeHtml(value) {
-      return String(value || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\"/g, '&quot;');
-    }
-
-    async function loadInquiries() {
-      try {
-        const response = await fetch('/api/inquiries');
-        const inquiries = await response.json();
-        if (!response.ok) throw new Error('Unable to load inquiries');
-
-        if (!inquiries.length) {
-          inquiriesList.innerHTML = '<p class="empty-state">No inquiries yet.</p>';
-          return;
-        }
-
-        inquiriesList.innerHTML = inquiries.map(inquiry => `
-          <article class="inquiry-card">
-            <div class="inquiry-card-header">
-              <h3>${escapeHtml(inquiry.name || 'Unknown')}</h3>
-              <span>${escapeHtml(new Date(inquiry.submittedAt || Date.now()).toLocaleString())}</span>
-            </div>
-            <p><strong>Email:</strong> ${escapeHtml(inquiry.email || 'N/A')}</p>
-            <p><strong>Message:</strong> ${escapeHtml(inquiry.message || '')}</p>
-          </article>
-        `).join('');
-      } catch (error) {
-        inquiriesList.innerHTML = '<p class="empty-state">Unable to load inquiries right now.</p>';
-      }
-    }
-
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      status.textContent = 'Publishing...';
-      status.style.color = '#111827';
-
-      const formData = new FormData(form);
-      const payload = {
-        brand: formData.get('brand'),
-        model: formData.get('model'),
-        price: formData.get('price'),
-        fuelType: formData.get('fuelType'),
-        segment: formData.get('segment') || 'New',
-        mileage: formData.get('mileage') || 'N/A',
-        imageUrl: formData.get('imageUrl') || 'images/car-placeholder.svg',
-        description: formData.get('description'),
-        highlights: formData.get('highlights')
-      };
-
-      try {
-        const response = await fetch('/api/cars', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || 'Failed to publish car');
-
-        status.textContent = 'Car published successfully.';
-        status.style.color = '#16a34a';
-        form.reset();
-      } catch (error) {
-        status.textContent = error.message;
-        status.style.color = '#dc2626';
-      }
-    });
-
-    loadInquiries();
-  </script>
+  <script src="admin.js"></script>
 </body>
 </html>

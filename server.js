@@ -232,6 +232,7 @@ app.post('/api/cars', requireAdmin, (req, res) => {
   try {
     const currentCars = loadCars();
     const newCar = {
+      ...car,
       id: car.id || Date.now(),
       brand: car.brand,
       model: car.model,
@@ -251,8 +252,7 @@ app.post('/api/cars', requireAdmin, (req, res) => {
         : String(car.highlights || '')
             .split(',')
             .map(item => item.trim())
-            .filter(Boolean),
-      ...car
+            .filter(Boolean)
     };
 
     currentCars.push(newCar);
@@ -262,6 +262,64 @@ app.post('/api/cars', requireAdmin, (req, res) => {
   } catch (error) {
     console.error('Failed to save car:', error);
     res.status(500).json({ error: 'Unable to save car at this time.' });
+  }
+});
+
+app.patch('/api/cars/:id', requireAdmin, (req, res) => {
+  const { brand, model, price, fuelType, description } = req.body;
+  if (!brand || !model || !price || !fuelType || !description) {
+    return res.status(400).json({ error: 'Brand, model, price, fuel type, and description are required.' });
+  }
+
+  try {
+    const currentCars = loadCars();
+    const carIndex = currentCars.findIndex(car => String(car.id) === req.params.id);
+    if (carIndex === -1) {
+      return res.status(404).json({ error: 'Car not found.' });
+    }
+
+    const car = currentCars[carIndex];
+    const highlights = Array.isArray(req.body.highlights)
+      ? req.body.highlights
+      : String(req.body.highlights || '')
+          .split(',')
+          .map(item => item.trim())
+          .filter(Boolean);
+
+    currentCars[carIndex] = {
+      ...car,
+      brand,
+      model,
+      price,
+      fuelType: normalizeFuelType(fuelType),
+      segment: req.body.segment || 'New',
+      mileage: req.body.mileage || 'N/A',
+      imageUrl: req.body.imageUrl || 'images/car-placeholder.svg',
+      description,
+      launchCategory: req.body.launchCategory || normalizeFuelType(fuelType),
+      highlights
+    };
+    saveCars(currentCars);
+    return res.json({ success: true, car: currentCars[carIndex] });
+  } catch (error) {
+    console.error('Failed to update car:', error);
+    return res.status(500).json({ error: 'Unable to update car at this time.' });
+  }
+});
+
+app.delete('/api/cars/:id', requireAdmin, (req, res) => {
+  try {
+    const currentCars = loadCars();
+    const remainingCars = currentCars.filter(car => String(car.id) !== req.params.id);
+    if (remainingCars.length === currentCars.length) {
+      return res.status(404).json({ error: 'Car not found.' });
+    }
+
+    saveCars(remainingCars);
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Failed to delete car:', error);
+    return res.status(500).json({ error: 'Unable to delete car at this time.' });
   }
 });
 

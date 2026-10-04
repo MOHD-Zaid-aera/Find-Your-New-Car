@@ -1,4 +1,4 @@
-var CACHE = "carbuy-v15";
+var CACHE = "carbuy-v18";
 var STATIC_ASSETS = [
   "/",
   "/index.html",
@@ -6,6 +6,7 @@ var STATIC_ASSETS = [
   "/compare.html",
   "/styles.css",
   "/app.js",
+  "/admin.js",
   "/product.js",
   "/compare.js",
   "/auth-modal.js",
@@ -43,12 +44,18 @@ self.addEventListener("fetch", function (e) {
     );
     return;
   }
+  if (["/admin", "/admin.html", "/login.html"].indexOf(url.pathname) !== -1) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then(function (hit) {
       if (hit) return hit;
       return fetch(e.request).then(function (res) {
-        var copy = res.clone();
-        caches.open(CACHE).then(function (cache) { cache.put(e.request, copy); });
+        if (res.ok && !res.redirected) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (cache) { cache.put(e.request, copy); });
+        }
         return res;
       });
     })
