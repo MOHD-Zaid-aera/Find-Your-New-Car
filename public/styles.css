@@ -597,7 +597,7 @@ body.dark-theme .site-header {
   .nav-brand-tag { display: none; }
   .nav-ico       { width: 36px; height: 36px; }
   .nav-ico svg   { width: 19px; height: 19px; }
-  .nav-right     { gap: 0.15rem; }
+  .nav-right     { gap: 0.15rem; margin-left: auto; }
   .nav-drawer {
     padding-bottom: env(safe-area-inset-bottom);
     box-shadow: -16px 0 48px rgba(15,23,42,0.22);
