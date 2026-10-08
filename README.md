@@ -6,7 +6,7 @@ A responsive car buying website with a Node.js backend and static frontend. The 
 
 - Responsive design for desktop and mobile
 - Backend API serving car details
-- Search and filter by brand and fuel type
+- Search and filter by brand, fuel type, and budget
 - Indian pricing and car images
 - Easy local setup
 

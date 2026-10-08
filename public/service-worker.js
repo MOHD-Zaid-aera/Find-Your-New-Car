@@ -1,10 +1,10 @@
-var CACHE = "carbuy-v18";
+var CACHE = "carbuy-v24";
 var STATIC_ASSETS = [
   "/",
   "/index.html",
   "/product.html",
   "/compare.html",
-  "/styles.css",
+  "/styles.css?v=24",
   "/app.js",
   "/admin.js",
   "/product.js",
@@ -18,7 +18,9 @@ var STATIC_ASSETS = [
 self.addEventListener("install", function (e) {
   e.waitUntil(
     caches.open(CACHE).then(function (cache) {
-      return cache.addAll(STATIC_ASSETS);
+      return cache.addAll(STATIC_ASSETS.map(function (asset) {
+        return new Request(asset, { cache: "reload" });
+      }));
     })
   );
   self.skipWaiting();

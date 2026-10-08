@@ -483,13 +483,18 @@ function showToast(msg) {
 // PRICE RANGE SLIDER
 var priceRange  = { min: 0, max: Infinity };
 var sliderReady = false;
+var priceScale  = 100;
 
 function parsePriceLakh(car) {
   var s = String(car.price || "").toLowerCase();
-  var m = s.match(/([\d.]+)\s*(lakh|lac|cr|crore)/i);
-  if (!m) { var n = parseFloat(s.replace(/[^\d.]/g, "")); return isNaN(n) ? 0 : n; }
-  var n = parseFloat(m[1]);
-  return /cr/i.test(m[2]) ? n * 100 : n;
+  var m = s.match(/([\d,]+(?:\.\d+)?)\s*(lakh|lakhs|lac|lacs|cr|crore|crores)\b/i);
+  if (!m) { var n = parseFloat(s.replace(/,/g, "").replace(/[^\d.]/g, "")); return isNaN(n) ? 0 : n; }
+  var n = parseFloat(m[1].replace(/,/g, ""));
+  return /^(cr|crore)/i.test(m[2]) ? n * 100 : n;
+}
+
+function formatPriceLakh(value) {
+  return "\u20B9" + (value / priceScale).toFixed(2) + " L";
 }
 
 function initPriceSlider(allCars) {
@@ -497,31 +502,60 @@ function initPriceSlider(allCars) {
   var maxSlider = document.getElementById("priceMaxSlider");
   var label     = document.getElementById("priceRangeDisplay");
   var fill      = document.getElementById("priceFill");
+  var reset     = document.getElementById("priceResetButton");
+  var minBound  = document.getElementById("priceMinBound");
+  var maxBound  = document.getElementById("priceMaxBound");
   if (!minSlider || !maxSlider) return;
 
-  var prices  = allCars.map(parsePriceLakh).filter(function (p) { return p > 0; });
-  var dataMin = Math.floor(Math.min.apply(null, prices));
-  var dataMax = Math.ceil(Math.max.apply(null, prices));
+  var prices = allCars.map(parsePriceLakh).filter(function (p) { return p > 0; });
+  if (!prices.length) {
+    sliderReady = false;
+    minSlider.disabled = true;
+    maxSlider.disabled = true;
+    if (label) label.textContent = "Prices unavailable";
+    if (reset) reset.hidden = true;
+    return;
+  }
 
+  var dataMin = Math.round(Math.min.apply(null, prices) * priceScale);
+  var dataMax = Math.round(Math.max.apply(null, prices) * priceScale);
+
+  minSlider.disabled = false;
+  maxSlider.disabled = false;
   minSlider.min = dataMin; minSlider.max = dataMax; minSlider.value = dataMin;
   maxSlider.min = dataMin; maxSlider.max = dataMax; maxSlider.value = dataMax;
   priceRange = { min: dataMin, max: dataMax };
   sliderReady = true;
-  updateSliderUI(minSlider, maxSlider, dataMin, dataMax, fill, label);
+  updateSliderUI(minSlider, maxSlider, dataMin, dataMax, fill, label, reset, minBound, maxBound);
 
   function onSlide() {
     var lo = parseInt(minSlider.value), hi = parseInt(maxSlider.value);
     if (lo > hi) { if (this === minSlider) minSlider.value = hi; else maxSlider.value = lo; }
     lo = parseInt(minSlider.value); hi = parseInt(maxSlider.value);
     priceRange = { min: lo, max: hi };
-    updateSliderUI(minSlider, maxSlider, dataMin, dataMax, fill, label);
+    minSlider.classList.toggle("price-slider-active", this === minSlider);
+    maxSlider.classList.toggle("price-slider-active", this === maxSlider);
+    updateSliderUI(minSlider, maxSlider, dataMin, dataMax, fill, label, reset, minBound, maxBound);
     applyFilters();
   }
   minSlider.addEventListener("input", onSlide);
   maxSlider.addEventListener("input", onSlide);
+
+  if (reset) {
+    reset.addEventListener("click", function () {
+      minSlider.value = dataMin;
+      maxSlider.value = dataMax;
+      priceRange = { min: dataMin, max: dataMax };
+      minSlider.classList.remove("price-slider-active");
+      maxSlider.classList.remove("price-slider-active");
+      updateSliderUI(minSlider, maxSlider, dataMin, dataMax, fill, label, reset, minBound, maxBound);
+      applyFilters();
+      minSlider.focus();
+    });
+  }
 }
 
-function updateSliderUI(minSlider, maxSlider, dataMin, dataMax, fill, label) {
+function updateSliderUI(minSlider, maxSlider, dataMin, dataMax, fill, label, reset, minBound, maxBound) {
   var lo   = parseInt(minSlider.value);
   var hi   = parseInt(maxSlider.value);
   var span = dataMax - dataMin || 1;
@@ -531,8 +565,13 @@ function updateSliderUI(minSlider, maxSlider, dataMin, dataMax, fill, label) {
   if (label) {
     label.textContent = (lo === dataMin && hi === dataMax)
       ? "All prices"
-      : "\u20B9" + lo + "L \u2014 \u20B9" + hi + "L";
+      : formatPriceLakh(lo) + " \u2014 " + formatPriceLakh(hi);
   }
+  if (reset) reset.hidden = lo === dataMin && hi === dataMax;
+  if (minBound) minBound.textContent = formatPriceLakh(dataMin);
+  if (maxBound) maxBound.textContent = formatPriceLakh(dataMax);
+  minSlider.setAttribute("aria-valuetext", "Minimum price " + formatPriceLakh(lo));
+  maxSlider.setAttribute("aria-valuetext", "Maximum price " + formatPriceLakh(hi));
 }
 
 // CAR GRID
@@ -631,7 +670,7 @@ function applyFilters() {
     var fm = fuel  === "all" || car.fuelType === fuel;
     var sm = !term || [car.brand, car.model, car.description, car.segment, car.fuelType]
       .some(function (v) { return String(v || "").toLowerCase().includes(term); });
-    var price = parsePriceLakh(car);
+    var price = Math.round(parsePriceLakh(car) * priceScale);
     var pm = !sliderReady || (price >= loP && price <= hiP);
     return bm && fm && sm && pm;
   });

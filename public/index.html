@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=24">
 </head>
 <body>
   <!-- ═══════ SITE HEADER ═══════ -->
@@ -364,26 +364,64 @@
           <h2>Top car models available now</h2>
         </div>
         <div class="filters reveal-on-scroll" data-delay="100">
-          <div class="filter-group">
-            <label for="brandFilter">Brand</label>
-            <select id="brandFilter"><option value="all">All Brands</option></select>
+          <div class="filter-group filter-choice-group">
+            <label class="filter-choice-label" for="brandFilter">
+              <span class="filter-choice-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 4.8 6a2 2 0 0 1 1.9-1.4h10.6A2 2 0 0 1 19.2 6l1.8 5.5"/><path d="M3 11.5h18v7H3zM6 18.5v2m12-2v2M3 14.5h2m14 0h2"/></svg>
+              </span>
+              <span class="filter-choice-copy">
+                <span class="filter-choice-title">Brand</span>
+                <span class="filter-choice-hint">Choose a make</span>
+              </span>
+            </label>
+            <span class="filter-select-wrap">
+              <select id="brandFilter"><option value="all">All Brands</option></select>
+              <svg class="filter-select-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
           </div>
-          <div class="filter-group">
-            <label for="fuelFilter">Fuel</label>
-            <select id="fuelFilter">
-              <option value="all">All Types</option>
-              <option value="Petrol">Petrol</option>
-              <option value="Diesel">Diesel</option>
-              <option value="CNG">CNG</option>
-              <option value="Electric">Electric</option>
-            </select>
+          <div class="filter-group filter-choice-group">
+            <label class="filter-choice-label" for="fuelFilter">
+              <span class="filter-choice-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M3 21h14M7 7h6v5H7zM16 8h2l2 2v7a2 2 0 0 1-4 0v-5"/></svg>
+              </span>
+              <span class="filter-choice-copy">
+                <span class="filter-choice-title">Fuel type</span>
+                <span class="filter-choice-hint">Pick your preference</span>
+              </span>
+            </label>
+            <span class="filter-select-wrap">
+              <select id="fuelFilter">
+                <option value="all">All fuel types</option>
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="CNG">CNG</option>
+                <option value="Electric">Electric</option>
+              </select>
+              <svg class="filter-select-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
           </div>
           <div class="filter-group filter-price-group">
-            <label>Budget: <span id="priceRangeDisplay" class="price-range-label">All prices</span></label>
+            <div class="price-filter-heading">
+              <div class="price-filter-copy">
+                <span class="price-filter-icon" aria-hidden="true">₹</span>
+                <span class="price-filter-text">
+                  <span id="priceFilterTitle" class="price-filter-title">Budget range</span>
+                  <span class="price-filter-hint">Set your budget</span>
+                </span>
+              </div>
+              <div class="price-filter-actions">
+                <output id="priceRangeDisplay" class="price-range-label" for="priceMinSlider priceMaxSlider" aria-live="polite">All prices</output>
+                <button type="button" id="priceResetButton" class="price-reset" hidden>Reset</button>
+              </div>
+            </div>
             <div class="price-slider-wrap" id="priceSliderWrap">
-              <div class="price-track"><div class="price-fill" id="priceFill"></div></div>
-              <input type="range" id="priceMinSlider" class="price-range-input" min="0" max="100" value="0" step="1">
-              <input type="range" id="priceMaxSlider" class="price-range-input" min="0" max="100" value="100" step="1">
+              <div class="price-track" aria-hidden="true"><div class="price-fill" id="priceFill"></div></div>
+              <input type="range" id="priceMinSlider" class="price-range-input" min="0" max="100" value="0" step="1" aria-label="Minimum car price" aria-valuetext="Minimum price">
+              <input type="range" id="priceMaxSlider" class="price-range-input" min="0" max="100" value="100" step="1" aria-label="Maximum car price" aria-valuetext="Maximum price">
+            </div>
+            <div class="price-bound-labels" aria-hidden="true">
+              <span id="priceMinBound">Lowest</span>
+              <span id="priceMaxBound">Highest</span>
             </div>
           </div>
         </div>
